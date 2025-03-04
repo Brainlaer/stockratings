@@ -1,0 +1,84 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "Blog API.",
+    "version": "1.0.0"
+  },
+  "host": "localhost:8080",
+  "basePath": "/api/v1",
+  "paths": {
+    "/stock": {
+      "get": {
+        "description": "GetStock returns all stock",
+        "operationId": "getAllStock",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/successResponse"
+          }
+        }
+      },
+      "put": {
+        "description": "updateStock returns message",
+        "operationId": "updateStock",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/successResponse"
+          }
+        }
+      },
+      "post": {
+        "description": "CreateStock returns message",
+        "operationId": "getAllStock",
+        "responses": {
+          "202": {
+            "$ref": "#/responses/acceptedResponse"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete returns message",
+        "operationId": "delete",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/successResponse"
+          }
+        }
+      }
+    }
+  },
+  "responses": {
+    "acceptedResponse": {
+      "description": "acceptedResponse representa una respuesta aceptada.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "x-go-name": "Message"
+          }
+        }
+      }
+    },
+    "successResponse": {
+      "description": "successResponse representa una respuesta exitosa.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "x-go-name": "Message"
+          }
+        }
+      }
+    }
+  }
+}
