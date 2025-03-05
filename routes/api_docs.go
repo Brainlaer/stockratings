@@ -3,7 +3,7 @@
 //	Schemes: http
 //	BasePath: /api/v1
 //	Version: 1.0.0
-//	Host: localhost:8080
+//	Host: localhost:8081
 //
 //	Consumes:
 //	- application/json

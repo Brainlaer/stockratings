@@ -1,20 +1,31 @@
 package controllers
 
 import (
+	"example/hello/services"
+	"example/hello/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
+type StockRatingController struct {
+	Serv *services.StockService
+}
+
+func NewStockRatingController(serv *services.StockService)*StockRatingController{
+	return &StockRatingController{Serv: serv}
+}
+	
 // swagger:route GET /stock getAllStock
 //
 //GetStock returns all stock
 //
 //responses:
 //
-//	200: successResponse
-func GetAll(c *gin.Context){
-	c.IndentedJSON(http.StatusOK,"STOCK")
+//	200: Response
+func (c *StockRatingController) GetAll(ctx *gin.Context){
+	var response utils.Response=c.Serv.GetAll()
+	ctx.IndentedJSON(http.StatusOK, response)
 }
 
 // swagger:route POST /stock getAllStock
@@ -23,10 +34,10 @@ func GetAll(c *gin.Context){
 //
 //responses:
 //
-//	202: acceptedResponse
-func Post(c *gin.Context){
+//	202: Response
+func (c *StockRatingController) Post(ctx *gin.Context){
 	 
-	c.IndentedJSON(http.StatusAccepted,"Created")
+	ctx.IndentedJSON(http.StatusAccepted,"Created")
 }
 
 // swagger:route PUT /stock updateStock
@@ -35,10 +46,10 @@ func Post(c *gin.Context){
 //
 //responses:
 //
-//	200: successResponse
-func Put(c *gin.Context){
+//	200: Response
+func (c *StockRatingController) Put(ctx *gin.Context){
 	 
-	c.IndentedJSON(http.StatusOK,"Updated")
+	ctx.IndentedJSON(http.StatusOK,"Updated")
 }
 
 // swagger:route DELETE /stock delete
@@ -47,8 +58,8 @@ func Put(c *gin.Context){
 //
 //responses:
 //
-//	200: successResponse
-func Delete(c *gin.Context){
-	c.IndentedJSON(http.StatusOK,"deleted")
+//	200: Response
+func (c *StockRatingController) Delete(ctx *gin.Context){
+	ctx.IndentedJSON(http.StatusOK,"deleted")
 
 }

@@ -13,7 +13,7 @@
     "title": "Blog API.",
     "version": "1.0.0"
   },
-  "host": "localhost:8080",
+  "host": "localhost:8081",
   "basePath": "/api/v1",
   "paths": {
     "/stock": {
@@ -22,7 +22,7 @@
         "operationId": "getAllStock",
         "responses": {
           "200": {
-            "$ref": "#/responses/successResponse"
+            "$ref": "#/responses/Response"
           }
         }
       },
@@ -31,7 +31,7 @@
         "operationId": "updateStock",
         "responses": {
           "200": {
-            "$ref": "#/responses/successResponse"
+            "$ref": "#/responses/Response"
           }
         }
       },
@@ -40,7 +40,7 @@
         "operationId": "getAllStock",
         "responses": {
           "202": {
-            "$ref": "#/responses/acceptedResponse"
+            "$ref": "#/responses/Response"
           }
         }
       },
@@ -49,35 +49,43 @@
         "operationId": "delete",
         "responses": {
           "200": {
-            "$ref": "#/responses/successResponse"
+            "$ref": "#/responses/Response"
           }
         }
       }
     }
   },
   "responses": {
-    "acceptedResponse": {
-      "description": "acceptedResponse representa una respuesta aceptada.",
+    "Response": {
+      "description": "Response representa una respuesta del servidor.",
       "schema": {
         "type": "object",
         "properties": {
-          "message": {
+          "data": {
+            "x-go-name": "Data"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "x-go-name": "Code"
+              },
+              "details": {
+                "type": "string",
+                "x-go-name": "Details"
+              }
+            },
+            "x-go-name": "Error"
+          },
+          "status": {
             "type": "string",
-            "x-go-name": "Message"
+            "x-go-name": "Status"
           }
         }
-      }
-    },
-    "successResponse": {
-      "description": "successResponse representa una respuesta exitosa.",
-      "schema": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "x-go-name": "Message"
-          }
-        }
+      },
+      "headers": {
+        "body": {}
       }
     }
   }

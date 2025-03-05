@@ -1,20 +1,17 @@
 package utils
 
-// successResponse representa una respuesta exitosa.
+
+
+// Response representa una respuesta del servidor.
 //
-// swagger:response successResponse
-type successResponse struct {
-	// in: body
+// swagger:response Response
+type Response struct{
 	Body struct {
-		Message string `json:"message"`
-	}
-}
-// acceptedResponse representa una respuesta aceptada.
-//
-// swagger:response acceptedResponse
-type acceptedResponse struct {
-	// in: body
-	Body struct {
-		Message string `json:"message"`
-	}
+		Status string `json:"status"`
+		Data any `json:"data,omitempty"`
+		Error *struct{
+			Code string `json:"code"`
+			Details string `json:"details"`
+		}`json:"error,omitempty"`
+	} `json:"body"`
 }

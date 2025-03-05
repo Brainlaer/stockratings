@@ -1,7 +1,7 @@
 package models
 
-type stockRating struct{
-	ID string `json:"ticker`
+type StockRating struct{
+	ID string `json:"id`
     Ticker string `json:"ticker`
 	Target_from string `json:"target_from`
 	Target_to string `json:"target_to`
