@@ -16,7 +16,7 @@ func NewStockRatingController(serv *services.StockService)*StockRatingController
 	return &StockRatingController{Serv: serv}
 }
 	
-// swagger:route GET /stock getAllStock
+// swagger:route GET /stock stock GetStock
 //
 //GetStock returns all stock
 //
@@ -28,7 +28,19 @@ func (c *StockRatingController) GetAll(ctx *gin.Context){
 	ctx.IndentedJSON(http.StatusOK, response)
 }
 
-// swagger:route POST /stock createStock
+// swagger:route GET /stock/{id} stock id
+//
+//GetOneStock returns one from the stock
+//
+//responses:
+//
+//	200: Response
+func (c *StockRatingController) GetOne(ctx *gin.Context){
+	var response utils.Response=c.Serv.GetOne(ctx)
+	ctx.IndentedJSON(http.StatusOK, response)
+}
+
+// swagger:route POST /stock stock createStock
 //
 //CreateStock returns message
 //
@@ -40,7 +52,7 @@ func (c *StockRatingController) Post(ctx *gin.Context){
 	ctx.IndentedJSON(http.StatusOK,response)
 }
 
-// swagger:route PUT /stock updateStock
+// swagger:route PUT /stock stock updateStock
 //
 //updateStock returns message
 //
@@ -48,11 +60,11 @@ func (c *StockRatingController) Post(ctx *gin.Context){
 //
 //	200: Response
 func (c *StockRatingController) Put(ctx *gin.Context){
-	 
+	
 	ctx.IndentedJSON(http.StatusOK,"Updated")
 }
 
-// swagger:route DELETE /stock deleteStock
+// swagger:route DELETE /stock/{id} stock id
 //
 //Delete returns message
 //

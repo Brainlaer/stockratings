@@ -17,6 +17,7 @@ type StockService struct {
 func NewStockService(repo *repositories.StockRatingRepository) *StockService {
 	return &StockService{Repo: repo}
 }
+
 func (c *StockService) GetAll() utils.Response {
 	response := utils.Response{}
 	stocks, err := c.Repo.GetAll()
@@ -31,6 +32,21 @@ func (c *StockService) GetAll() utils.Response {
 	response.Body.Data = stocks
 	return response
 
+}
+
+func (c *StockService) GetOne(ctx *gin.Context) utils.Response {
+	response := utils.Response{}
+	stock, err := c.Repo.GetOne(ctx.Param("id"))
+
+	if err != nil {
+		response.Body.Status = "500"
+		response.Body.Error.Code = "DATABASE_ERROR"
+		response.Body.Error.Details = err.Error()
+		return response
+	}
+	response.Body.Status = "200"
+	response.Body.Data = stock
+	return response
 }
 
 func (c *StockService) Create(ctx *gin.Context) *utils.Response {
@@ -66,7 +82,7 @@ func (c *StockService) Create(ctx *gin.Context) *utils.Response {
 
 func (c *StockService) Delete(ctx *gin.Context) *utils.Response{
 	var response utils.Response
-	err:=c.	Repo.Delete(ctx.Query("id"))
+	err:=c.	Repo.Delete(ctx.Param("id"))
 	if err != nil {
 		response.Body = utils.ResponseBody{
 			Status: "500",

@@ -33,6 +33,17 @@ func(r *StockRatingRepository) GetAll()([]models.StockRatingGet, error){
 	return stockRatings, nil
 }
 
+func(r *StockRatingRepository) GetOne(id string)(*models.StockRatingGet, error){
+	row := r.DB.QueryRow("SELECT * FROM stock_ratings WHERE id= $1 ::UUID",id)
+
+		var stockRating models.StockRatingGet
+		if err:=row.Scan(&stockRating.ID, &stockRating.Ticker, &stockRating.Target_from, &stockRating.Target_to, &stockRating.Rating_from, & stockRating.Rating_to, &stockRating.Action, &stockRating.Brokerage, &stockRating.Company, &stockRating.Time); err !=nil{
+			return nil, err
+		}
+	 
+	return &stockRating, nil
+}
+
 func (r *StockRatingRepository) Create(stockRating *models.StockRatingCreate, time *time.Time)error{
 	_, err:=r.DB.Exec("INSERT INTO stock_ratings"+
 	"(ticker, target_from, target_to, company, action, brokerage, rating_from, rating_to, time)"+ 
