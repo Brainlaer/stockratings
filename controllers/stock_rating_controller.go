@@ -52,7 +52,7 @@ func (c *StockRatingController) Put(ctx *gin.Context){
 	ctx.IndentedJSON(http.StatusOK,"Updated")
 }
 
-// swagger:route DELETE /stock delete
+// swagger:route DELETE /stock deleteStock
 //
 //Delete returns message
 //

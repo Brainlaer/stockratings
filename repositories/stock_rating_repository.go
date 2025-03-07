@@ -46,7 +46,7 @@ func (r *StockRatingRepository) Create(stockRating *models.StockRatingCreate, ti
 }
 
 func (r *StockRatingRepository) Delete(id string)error{
-	_, err:=r.DB.Exec("DELETE FROM stock_ratings WHERE id= %1",id)
+	_, err:=r.DB.Exec("DELETE FROM stock_ratings WHERE id= $1 ::UUID",id)
 	if err != nil{
 		return err
 	}

@@ -66,7 +66,7 @@ func (c *StockService) Create(ctx *gin.Context) *utils.Response {
 
 func (c *StockService) Delete(ctx *gin.Context) *utils.Response{
 	var response utils.Response
-	err:=c.	Repo.Delete(ctx.Param("id"))
+	err:=c.	Repo.Delete(ctx.Query("id"))
 	if err != nil {
 		response.Body = utils.ResponseBody{
 			Status: "500",
