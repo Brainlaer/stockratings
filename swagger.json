@@ -19,7 +19,10 @@
     "/stock": {
       "get": {
         "description": "GetStock returns all stock",
-        "operationId": "getAllStock",
+        "tags": [
+          "stock"
+        ],
+        "operationId": "GetStock",
         "responses": {
           "200": {
             "$ref": "#/responses/Response"
@@ -28,6 +31,9 @@
       },
       "put": {
         "description": "updateStock returns message",
+        "tags": [
+          "stock"
+        ],
         "operationId": "updateStock",
         "responses": {
           "200": {
@@ -37,6 +43,9 @@
       },
       "post": {
         "description": "CreateStock returns message",
+        "tags": [
+          "stock"
+        ],
         "operationId": "createStock",
         "parameters": [
           {
@@ -54,17 +63,47 @@
             "$ref": "#/responses/Response"
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/stock/{id}": {
+      "get": {
         "description": "Delete returns message",
-        "operationId": "deleteStock",
+        "tags": [
+          "stock"
+        ],
+        "operationId": "id",
         "parameters": [
           {
             "type": "string",
             "default": "a927ed98-e7b3-460b-91e3-c0c72bb8900c",
             "x-go-name": "ID",
+            "description": "ID del stock",
             "name": "id",
-            "in": "query"
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/Response"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete returns message",
+        "tags": [
+          "stock"
+        ],
+        "operationId": "id",
+        "parameters": [
+          {
+            "type": "string",
+            "default": "a927ed98-e7b3-460b-91e3-c0c72bb8900c",
+            "x-go-name": "ID",
+            "description": "ID del stock",
+            "name": "id",
+            "in": "path",
+            "required": true
           }
         ],
         "responses": {
