@@ -56,6 +56,26 @@ func (r *StockRatingRepository) Create(stockRating *models.StockRatingCreate, ti
 	return nil
 }
 
+func (r *StockRatingRepository) Update(stock *models.StockRatingGet) error {
+	query := `
+		UPDATE stock_ratings 
+		SET ticker = $1, target_from = $2, target_to = $3, company = $4, action = $5, 
+		    brokerage = $6, rating_from = $7, rating_to = $8, time = $9 
+		WHERE id = $10`
+	
+	_, err := r.DB.Exec(query, 
+		stock.Ticker, stock.Target_from, stock.Target_to, 
+		stock.Company, stock.Action, stock.Brokerage, 
+		stock.Rating_from, stock.Rating_to, stock.Time, 
+		stock.ID,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+
 func (r *StockRatingRepository) Delete(id string)error{
 	_, err:=r.DB.Exec("DELETE FROM stock_ratings WHERE id= $1 ::UUID",id)
 	if err != nil{

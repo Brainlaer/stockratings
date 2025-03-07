@@ -52,7 +52,7 @@ func (c *StockRatingController) Post(ctx *gin.Context){
 	ctx.IndentedJSON(http.StatusOK,response)
 }
 
-// swagger:route PUT /stock stock updateStock
+// swagger:route PUT /stock/{id} stock updateStock
 //
 //updateStock returns message
 //
@@ -60,8 +60,8 @@ func (c *StockRatingController) Post(ctx *gin.Context){
 //
 //	200: Response
 func (c *StockRatingController) Put(ctx *gin.Context){
-	
-	ctx.IndentedJSON(http.StatusOK,"Updated")
+	response:=c.Serv.Update(ctx)
+	ctx.IndentedJSON(http.StatusOK,response)
 }
 
 // swagger:route DELETE /stock/{id} stock id

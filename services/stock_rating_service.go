@@ -5,6 +5,7 @@ import (
 	"example/hello/repositories"
 	"example/hello/utils"
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -52,11 +53,11 @@ func (c *StockService) GetOne(ctx *gin.Context) utils.Response {
 func (c *StockService) Create(ctx *gin.Context) *utils.Response {
 	var response utils.Response
 
-	stockRating, decodeResponse := decodeJson(ctx)
+	stockRating, decodeResponse := DecodeJson(ctx)
 	if decodeResponse != nil {
 		return decodeResponse
 	}
-	stockTime, decodeResponse:=parseTextToTime(stockRating.Time)
+	stockTime, decodeResponse:=ParseTextToTime(stockRating.Time)
 	if decodeResponse != nil {
 		return decodeResponse
 	}
@@ -80,6 +81,55 @@ func (c *StockService) Create(ctx *gin.Context) *utils.Response {
 	return &response
 }
 
+func (c *StockService) Update(ctx *gin.Context) *utils.Response {
+	var response *utils.Response
+	newStockRating := &models.StockRatingUpdateRequest{} // 🔹 Aquí inicializamos
+
+	newStockRating.Body, response = DecodeJson(ctx)
+	if response != nil {
+		return response
+	}
+
+	stockRating, err := c.Repo.GetOne(ctx.Param("id"))
+	if err != nil {
+		response = &utils.Response{
+			Body: utils.ResponseBody{
+				Status: "500",
+				Error: utils.ResponseError{
+					Code:    "DATABASE_ERROR",
+					Details: err.Error(),
+				},
+			},
+		}
+		return response
+	}
+
+	UpdateValues(stockRating, newStockRating.Body)
+
+	err = c.Repo.Update(stockRating)
+	if err != nil {
+		return &utils.Response{
+			Body: utils.ResponseBody{
+				Status: "500",
+				Error: utils.ResponseError{
+					Code:    "UPDATE_ERROR",
+					Details: err.Error(),
+				},
+			},
+		}
+	}
+
+	// 🔹 Responder con los datos actualizados
+	return &utils.Response{
+		Body: utils.ResponseBody{
+			Status: "200",
+			Data:   stockRating,
+		},
+	}
+
+}
+
+
 func (c *StockService) Delete(ctx *gin.Context) *utils.Response{
 	var response utils.Response
 	err:=c.	Repo.Delete(ctx.Param("id"))
@@ -101,7 +151,7 @@ func (c *StockService) Delete(ctx *gin.Context) *utils.Response{
 	return &response
 }
 
-func decodeJson(ctx *gin.Context) (*models.StockRatingCreate, *utils.Response) {
+func DecodeJson(ctx *gin.Context) (*models.StockRatingCreate, *utils.Response) {
 	var response utils.Response
 	var stockRating models.StockRatingCreate
 
@@ -118,7 +168,7 @@ func decodeJson(ctx *gin.Context) (*models.StockRatingCreate, *utils.Response) {
 	return &stockRating, nil
 }
 
-func parseTextToTime(text string)(*time.Time,*utils.Response){
+func ParseTextToTime(text string)(*time.Time,*utils.Response){
 	var response utils.Response
 	fmt.Print(text)
 	value:=text
@@ -136,4 +186,20 @@ func parseTextToTime(text string)(*time.Time,*utils.Response){
 	}
 	return &dateTime,nil
 
+}
+
+
+func UpdateValues(stockRating *models.StockRatingGet , newStockRating *models.StockRatingCreate) {
+	mockStockRating:=models.NewStockRatingCreate(newStockRating,stockRating.ID)
+	v1 := reflect.ValueOf(stockRating).Elem()
+	V2 := reflect.ValueOf(mockStockRating).Elem()
+
+	for i :=0; i <v1.NumField(); i++{
+		field1:= v1.Field(i)
+		field2:= V2.Field(i)
+
+		if field1.CanSet() && !reflect.DeepEqual(field1.Interface(), field2.Interface()){
+			field1.Set(field2)
+		}
+	}
 }
