@@ -6,12 +6,16 @@ package utils
 //
 // swagger:response Response
 type Response struct{
-	Body struct {
-		Status string `json:"status"`
-		Data any `json:"data,omitempty"`
-		Error *struct{
-			Code string `json:"code"`
-			Details string `json:"details"`
-		}`json:"error,omitempty"`
-	} `json:"body"`
+	Body ResponseBody`json:"body"`
+}
+
+type ResponseBody struct{
+	Status string `json:"status"`
+	Data any `json:"data,omitempty"`
+	Error ResponseError`json:"error,omitempty"`
+}
+
+type ResponseError struct{
+	Code string `json:"code,omitempty"`
+	Details string `json:"details,omitempty"`
 }
