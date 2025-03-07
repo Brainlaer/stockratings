@@ -17,9 +17,10 @@ func SetupRoutes(router *gin.Engine) {
 	api := router.Group("api/v1")
 	{
 		api.GET("stock", stockRatingController.GetAll)
+		api.GET("stock/:id", stockRatingController.GetOne)
 		api.POST("stock", stockRatingController.Post)
 		api.PUT("stock", stockRatingController.Put)
-		api.DELETE("stock", stockRatingController.Delete)
+		api.DELETE("stock/:id", stockRatingController.Delete)
 	}
 }
 
