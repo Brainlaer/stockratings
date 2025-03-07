@@ -10,12 +10,12 @@ type StockRatingRequest struct {
 
 // StockRating cuerpo insert
 // swagger:model createStock
-type StockRatingCreate struct{
+type StockRatingCreate struct {
 
 	// Ticker del stock
 	// Required: true
 	// Default: BSBR
-    Ticker string `json:"ticker"`
+	Ticker string `json:"ticker"`
 	// Target_from del stock
 	// Required: true
 	// Minimum: 1
@@ -51,21 +51,23 @@ type StockRatingCreate struct{
 	// Default: 2025-01-13T00:30:05.813548892Z
 	Time string `json:"time"`
 }
+
 // StockRating cuerpo insert
 // swagger:model createStock
-type StockRatingGet struct{
+type StockRatingGet struct {
 	// ID del stock
 	// Required: false
 	// Default: a927ed98-e7b3-460b-91e3-c0c72bb8900c
 	ID string `json:"id"`
 	StockRatingCreate
 }
-// StockRating cuerpo insert
-// swagger:parameters deleteStock
-type StockRatingDelete struct{
-		// ID del stock
-	// Required: true
 
+// StockRating cuerpo insert
+// swagger:parameters id
+type StockRatingId struct {
+	// ID del stock
+	// Required: true
+	// in: path
 	// Default: a927ed98-e7b3-460b-91e3-c0c72bb8900c
-	ID string `json:"id"`
+	ID string `json:"id" path:"id"`
 }
