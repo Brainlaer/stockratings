@@ -28,16 +28,16 @@ func (c *StockRatingController) GetAll(ctx *gin.Context){
 	ctx.IndentedJSON(http.StatusOK, response)
 }
 
-// swagger:route POST /stock getAllStock
+// swagger:route POST /stock createStock
 //
 //CreateStock returns message
 //
 //responses:
 //
-//	202: Response
+//	200: Response
 func (c *StockRatingController) Post(ctx *gin.Context){
-	 
-	ctx.IndentedJSON(http.StatusAccepted,"Created")
+	response:=c.Serv.Create(ctx)
+	ctx.IndentedJSON(http.StatusOK,response)
 }
 
 // swagger:route PUT /stock updateStock
@@ -60,6 +60,7 @@ func (c *StockRatingController) Put(ctx *gin.Context){
 //
 //	200: Response
 func (c *StockRatingController) Delete(ctx *gin.Context){
-	ctx.IndentedJSON(http.StatusOK,"deleted")
+	response:=c.Serv.Delete(ctx)
+	ctx.IndentedJSON(http.StatusOK,response)
 
 }
