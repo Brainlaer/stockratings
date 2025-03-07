@@ -37,9 +37,20 @@
       },
       "post": {
         "description": "CreateStock returns message",
-        "operationId": "getAllStock",
+        "operationId": "createStock",
+        "parameters": [
+          {
+            "x-go-name": "Body",
+            "description": "Envoltura del cuerpo de la solicitud",
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/createStock"
+            }
+          }
+        ],
         "responses": {
-          "202": {
+          "200": {
             "$ref": "#/responses/Response"
           }
         }
@@ -55,34 +66,120 @@
       }
     }
   },
+  "definitions": {
+    "ResponseBody": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "x-go-name": "Data"
+        },
+        "error": {
+          "$ref": "#/definitions/ResponseError"
+        },
+        "status": {
+          "type": "string",
+          "x-go-name": "Status"
+        }
+      },
+      "x-go-package": "example/hello/utils"
+    },
+    "ResponseError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "x-go-name": "Code"
+        },
+        "details": {
+          "type": "string",
+          "x-go-name": "Details"
+        }
+      },
+      "x-go-package": "example/hello/utils"
+    },
+    "createStock": {
+      "description": "StockRating cuerpo insert",
+      "type": "object",
+      "required": [
+        "ticker",
+        "target_from",
+        "target_to",
+        "company",
+        "action",
+        "brokerage",
+        "rating_from",
+        "rating_to",
+        "time"
+      ],
+      "properties": {
+        "action": {
+          "description": "Action del stock",
+          "type": "string",
+          "default": "upgraded by",
+          "x-go-name": "Action"
+        },
+        "brokerage": {
+          "description": "Brokerage del stock",
+          "type": "string",
+          "default": "The Goldman Sachs Group",
+          "x-go-name": "Brokerage"
+        },
+        "company": {
+          "description": "Company del stock",
+          "type": "string",
+          "default": "Banco Santander (Brasil)",
+          "x-go-name": "Company"
+        },
+        "rating_from": {
+          "description": "Rating_from del stock",
+          "type": "string",
+          "default": "Sell",
+          "x-go-name": "Rating_from"
+        },
+        "rating_to": {
+          "description": "Rating_to del stock",
+          "type": "string",
+          "default": "Neutral",
+          "x-go-name": "Rating_to"
+        },
+        "target_from": {
+          "description": "Target_from del stock",
+          "type": "integer",
+          "format": "int64",
+          "default": 420,
+          "minimum": 1,
+          "x-go-name": "Target_from"
+        },
+        "target_to": {
+          "description": "Target_to del stock",
+          "type": "integer",
+          "format": "int64",
+          "default": 470,
+          "minimum": 1,
+          "x-go-name": "Target_to"
+        },
+        "ticker": {
+          "description": "Ticker del stock",
+          "type": "string",
+          "default": "BSBR",
+          "x-go-name": "Ticker"
+        },
+        "time": {
+          "description": "Time del stock",
+          "type": "string",
+          "default": "2025-01-13T00:30:05.813548892Z",
+          "x-go-name": "Time"
+        }
+      },
+      "x-go-name": "StockRatingCreate",
+      "x-go-package": "example/hello/models"
+    }
+  },
   "responses": {
     "Response": {
       "description": "Response representa una respuesta del servidor.",
       "schema": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "x-go-name": "Data"
-          },
-          "error": {
-            "type": "object",
-            "properties": {
-              "code": {
-                "type": "string",
-                "x-go-name": "Code"
-              },
-              "details": {
-                "type": "string",
-                "x-go-name": "Details"
-              }
-            },
-            "x-go-name": "Error"
-          },
-          "status": {
-            "type": "string",
-            "x-go-name": "Status"
-          }
-        }
+        "$ref": "#/definitions/ResponseBody"
       },
       "headers": {
         "body": {}
