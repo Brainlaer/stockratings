@@ -29,18 +29,6 @@
           }
         }
       },
-      "put": {
-        "description": "updateStock returns message",
-        "tags": [
-          "stock"
-        ],
-        "operationId": "updateStock",
-        "responses": {
-          "200": {
-            "$ref": "#/responses/Response"
-          }
-        }
-      },
       "post": {
         "description": "CreateStock returns message",
         "tags": [
@@ -75,12 +63,42 @@
         "parameters": [
           {
             "type": "string",
-            "default": "a927ed98-e7b3-460b-91e3-c0c72bb8900c",
             "x-go-name": "ID",
             "description": "ID del stock",
             "name": "id",
             "in": "path",
             "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/Response"
+          }
+        }
+      },
+      "put": {
+        "description": "updateStock returns message",
+        "tags": [
+          "stock"
+        ],
+        "operationId": "updateStock",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "ID",
+            "description": "ID del stock",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "x-go-name": "Body",
+            "description": "Envoltura del cuerpo de la solicitud",
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/createStock"
+            }
           }
         ],
         "responses": {
@@ -98,7 +116,6 @@
         "parameters": [
           {
             "type": "string",
-            "default": "a927ed98-e7b3-460b-91e3-c0c72bb8900c",
             "x-go-name": "ID",
             "description": "ID del stock",
             "name": "id",
@@ -146,7 +163,6 @@
       "x-go-package": "example/hello/utils"
     },
     "createStock": {
-      "description": "StockRating cuerpo insert",
       "type": "object",
       "required": [
         "ticker",
