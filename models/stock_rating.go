@@ -1,8 +1,5 @@
 package models
 
-import (
-
-)
 // StockRatingRequest representa los parámetros para crear un stock
 // swagger:parameters createStock
 type StockRatingRequest struct {
@@ -54,11 +51,21 @@ type StockRatingCreate struct{
 	// Default: 2025-01-13T00:30:05.813548892Z
 	Time string `json:"time"`
 }
-
+// StockRating cuerpo insert
+// swagger:model createStock
 type StockRatingGet struct{
-	// Nombre del stock
+	// ID del stock
 	// Required: false
 	// Default: a927ed98-e7b3-460b-91e3-c0c72bb8900c
-	ID string `json:"id,omitempty"`
+	ID string `json:"id"`
 	StockRatingCreate
+}
+// StockRating cuerpo insert
+// swagger:parameters deleteStock
+type StockRatingDelete struct{
+		// ID del stock
+	// Required: true
+
+	// Default: a927ed98-e7b3-460b-91e3-c0c72bb8900c
+	ID string `json:"id"`
 }
