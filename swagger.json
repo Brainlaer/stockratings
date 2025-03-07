@@ -57,7 +57,16 @@
       },
       "delete": {
         "description": "Delete returns message",
-        "operationId": "delete",
+        "operationId": "deleteStock",
+        "parameters": [
+          {
+            "type": "string",
+            "default": "a927ed98-e7b3-460b-91e3-c0c72bb8900c",
+            "x-go-name": "ID",
+            "name": "id",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
             "$ref": "#/responses/Response"
