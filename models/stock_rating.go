@@ -1,6 +1,5 @@
 package models
 
-// StockRatingRequest representa los parámetros para crear un stock
 // swagger:parameters createStock
 type StockRatingRequest struct {
 	// Envoltura del cuerpo de la solicitud
@@ -8,10 +7,18 @@ type StockRatingRequest struct {
 	Body StockRatingCreate `json:"body"`
 }
 
-// StockRating cuerpo insert
+// swagger:parameters updateStock
+type StockRatingUpdateRequest struct{
+	// ID del stock
+	// in: path
+	ID string `json:"id" path:"id"`
+	// Envoltura del cuerpo de la solicitud
+	// in:body
+	Body *StockRatingCreate `json:"body"`
+}
+
 // swagger:model createStock
 type StockRatingCreate struct {
-
 	// Ticker del stock
 	// Required: true
 	// Default: BSBR
@@ -52,7 +59,6 @@ type StockRatingCreate struct {
 	Time string `json:"time"`
 }
 
-// StockRating cuerpo insert
 // swagger:model createStock
 type StockRatingGet struct {
 	// ID del stock
@@ -62,12 +68,17 @@ type StockRatingGet struct {
 	StockRatingCreate
 }
 
-// StockRating cuerpo insert
 // swagger:parameters id
 type StockRatingId struct {
 	// ID del stock
-	// Required: true
 	// in: path
-	// Default: a927ed98-e7b3-460b-91e3-c0c72bb8900c
 	ID string `json:"id" path:"id"`
+}
+
+
+func NewStockRatingCreate(stock *StockRatingCreate, id string) *StockRatingGet {
+	return &StockRatingGet{
+		ID:          id,
+		StockRatingCreate: *stock,
+	}
 }
