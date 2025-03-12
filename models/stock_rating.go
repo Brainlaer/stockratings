@@ -27,12 +27,12 @@ type StockRatingCreate struct {
 	// Required: true
 	// Minimum: 1
 	// Default: 420
-	Target_from int64 `json:"target_from"`
+	Target_from float64 `json:"target_from"`
 	// Target_to del stock
 	// Required: true
 	// Minimum: 1
 	// Default: 470
-	Target_to int64 `json:"target_to"`
+	Target_to float64 `json:"target_to"`
 	// Company del stock
 	// Required: true
 	// Default: Banco Santander (Brasil)
@@ -65,6 +65,10 @@ type StockRatingGet struct {
 	// Required: false
 	// Default: a927ed98-e7b3-460b-91e3-c0c72bb8900c
 	ID string `json:"id"`
+		// crecimiento del stock
+	// Required: false
+	// Default: 12.78
+	Growth float64 `json:"growth"`
 	StockRatingCreate
 }
 
