@@ -6,6 +6,8 @@ import (
 	"example/hello/utils"
 	"fmt"
 	"reflect"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -19,18 +21,24 @@ func NewStockService(repo *repositories.StockRatingRepository) *StockService {
 	return &StockService{Repo: repo}
 }
 
-func (c *StockService) GetAll() utils.Response {
+func (c *StockService) GetAll(ctx *gin.Context) utils.Response {
 	response := utils.Response{}
-	stocks, err := c.Repo.GetAll()
+	filters,sortBy,order,limit,offset:=GetFilters(ctx)
+	stocks, totalRecords, err := c.Repo.GetAll(filters,sortBy,order, limit, offset)
 
 	if err != nil {
-		response.Body.Status = "500"
-		response.Body.Error.Code = "DATABASE_ERROR"
-		response.Body.Error.Details = err.Error()
+		response.Status = "500"
+		response.Error.Code = "DATABASE_ERROR"
+		response.Error.Details = err.Error()
 		return response
 	}
-	response.Body.Status = "200"
-	response.Body.Data = stocks
+	response.Status = "200"
+	response.Data = stocks
+	response.Meta = map[string]interface{}{
+		"limit":  limit,
+		"offset": offset,
+		"totalRecords": totalRecords,
+	}
 	return response
 
 }
@@ -40,13 +48,13 @@ func (c *StockService) GetOne(ctx *gin.Context) utils.Response {
 	stock, err := c.Repo.GetOne(ctx.Param("id"))
 
 	if err != nil {
-		response.Body.Status = "500"
-		response.Body.Error.Code = "DATABASE_ERROR"
-		response.Body.Error.Details = err.Error()
+		response.Status = "500"
+		response.Error.Code = "DATABASE_ERROR"
+		response.Error.Details = err.Error()
 		return response
 	}
-	response.Body.Status = "200"
-	response.Body.Data = stock
+	response.Status = "200"
+	response.Data = stock
 	return response
 }
 
@@ -64,7 +72,7 @@ func (c *StockService) Create(ctx *gin.Context) *utils.Response {
 
 	err := c.Repo.Create(stockRating,stockTime)
 	if err != nil {
-		response.Body = utils.ResponseBody{
+		response = utils.Response{
 			Status: "500",
 			Error: utils.ResponseError{
 				Code:    "DATABASE_ERROR",
@@ -73,7 +81,7 @@ func (c *StockService) Create(ctx *gin.Context) *utils.Response {
 		}
 		return &response
 	}
-	response.Body = utils.ResponseBody{
+	response = utils.Response{
 		Status: "202",
 		Data:   "Creado satisfactoriamente",
 	}
@@ -83,7 +91,7 @@ func (c *StockService) Create(ctx *gin.Context) *utils.Response {
 
 func (c *StockService) Update(ctx *gin.Context) *utils.Response {
 	var response *utils.Response
-	newStockRating := &models.StockRatingUpdateRequest{} // 🔹 Aquí inicializamos
+	newStockRating := &models.StockRatingUpdateRequest{}
 
 	newStockRating.Body, response = DecodeJson(ctx)
 	if response != nil {
@@ -93,13 +101,11 @@ func (c *StockService) Update(ctx *gin.Context) *utils.Response {
 	stockRating, err := c.Repo.GetOne(ctx.Param("id"))
 	if err != nil {
 		response = &utils.Response{
-			Body: utils.ResponseBody{
 				Status: "500",
 				Error: utils.ResponseError{
 					Code:    "DATABASE_ERROR",
 					Details: err.Error(),
 				},
-			},
 		}
 		return response
 	}
@@ -109,22 +115,19 @@ func (c *StockService) Update(ctx *gin.Context) *utils.Response {
 	err = c.Repo.Update(stockRating)
 	if err != nil {
 		return &utils.Response{
-			Body: utils.ResponseBody{
 				Status: "500",
 				Error: utils.ResponseError{
 					Code:    "UPDATE_ERROR",
 					Details: err.Error(),
 				},
-			},
 		}
 	}
 
-	// 🔹 Responder con los datos actualizados
 	return &utils.Response{
-		Body: utils.ResponseBody{
+
 			Status: "200",
 			Data:   stockRating,
-		},
+
 	}
 
 }
@@ -134,7 +137,7 @@ func (c *StockService) Delete(ctx *gin.Context) *utils.Response{
 	var response utils.Response
 	err:=c.	Repo.Delete(ctx.Param("id"))
 	if err != nil {
-		response.Body = utils.ResponseBody{
+		response = utils.Response{
 			Status: "500",
 			Error: utils.ResponseError{
 				Code:    "DATABASE_ERROR",
@@ -143,7 +146,7 @@ func (c *StockService) Delete(ctx *gin.Context) *utils.Response{
 		}
 		return &response 
 	}
-	response.Body = utils.ResponseBody{
+	response = utils.Response{
 		Status: "200",
 		Data:   "eliminado satisfactoriamente",
 	}
@@ -156,7 +159,7 @@ func DecodeJson(ctx *gin.Context) (*models.StockRatingCreate, *utils.Response) {
 	var stockRating models.StockRatingCreate
 
 	if err := ctx.ShouldBind(&stockRating); err != nil {
-		response.Body = utils.ResponseBody{
+		response = utils.Response{
 			Status: "400",
 			Error: utils.ResponseError{
 				Code:    "BAD_REQUEST",
@@ -175,7 +178,7 @@ func ParseTextToTime(text string)(*time.Time,*utils.Response){
 
 	dateTime,err:=time.Parse(time.RFC3339, value)
 	if err != nil {
-		response.Body = utils.ResponseBody{
+		response = utils.Response{
 			Status: "400",
 			Error: utils.ResponseError{
 				Code:    "ERROR_WHEN_PARSING_TEXT",
@@ -202,4 +205,26 @@ func UpdateValues(stockRating *models.StockRatingGet , newStockRating *models.St
 			field1.Set(field2)
 		}
 	}
+}
+
+func GetFilters(ctx *gin.Context)(map[string]string, []string, []string, int, int){
+	filters := map[string]string{}
+	for _, key := range []string{"ticker", "company", "action", "brokerage", "rating_from", "rating_to"} {
+		if value := ctx.Query(key); value != "" {
+			filters[key] = value
+		}
+	}
+
+	sortBy := strings.Split(ctx.DefaultQuery("sortBy", "time"), ",") 
+	order := strings.Split(ctx.DefaultQuery("order", "desc"), ",")   
+	limit, err := strconv.Atoi(ctx.DefaultQuery("limit", "10")) 
+	if err != nil || limit <= 0 {
+		limit = 10
+	}
+
+	offset, err := strconv.Atoi(ctx.DefaultQuery("offset", "0"))
+	if err != nil || offset < 0{
+		offset =0
+	}
+	return filters,sortBy,order, limit, offset
 }
