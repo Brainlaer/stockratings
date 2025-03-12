@@ -4,7 +4,6 @@ import (
 	"example/hello/models"
 	"example/hello/repositories"
 	"example/hello/utils"
-	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -173,7 +172,7 @@ func DecodeJson(ctx *gin.Context) (*models.StockRatingCreate, *utils.Response) {
 
 func ParseTextToTime(text string)(*time.Time,*utils.Response){
 	var response utils.Response
-	fmt.Print(text)
+	
 	value:=text
 
 	dateTime,err:=time.Parse(time.RFC3339, value)

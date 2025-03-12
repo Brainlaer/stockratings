@@ -26,7 +26,6 @@ func ConnectDB()*sql.DB{
 		os.Getenv("DB_SSLLMODE"),
 	)
 	
-	fmt.Println("DSN:", dsn) 
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		log.Fatalf("Error al conectarse a la base de datos: %v", err)

@@ -36,7 +36,6 @@ func(r *StockRatingRepository) GetAll(filters map[string]string, sortBy []string
 
 	}
 
-	fmt.Println(countQuery)
 
 	var totalRecords int
 	err := r.DB.QueryRow(countQuery, args...).Scan(&totalRecords)
