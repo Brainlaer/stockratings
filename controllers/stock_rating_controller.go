@@ -24,7 +24,7 @@ func NewStockRatingController(serv *services.StockService)*StockRatingController
 //
 //	200: Response
 func (c *StockRatingController) GetAll(ctx *gin.Context){
-	var response utils.Response=c.Serv.GetAll()
+	var response utils.Response=c.Serv.GetAll(ctx)
 	ctx.IndentedJSON(http.StatusOK, response)
 }
 
