@@ -46,8 +46,8 @@ func (s *StockService) GetOne(ctx *gin.Context) utils.Response {
 	stock, err := s.Repo.GetOne(ctx.Param("id"))
 
 	if err != nil {
-		response.Status = "500"
-		response.Error.Code = "DATABASE_ERROR"
+		response.Status = "404"
+		response.Error.Code = "NOT_FOUND"
 		response.Error.Details = err.Error()
 		return response
 	}
@@ -107,16 +107,6 @@ func (s *StockService) Update(ctx *gin.Context) *utils.Response {
 		}
 		return response
 	}
-	if stock == nil {
-		response = &utils.Response{
-				Status: "400",
-				Error: utils.ResponseError{
-					Code:    "BAD_REQUEST",
-					Details: "Stock Not Found",
-				},
-		}
-		return response
-	}
 
 	UpdateValues(stock, newStock)
 
@@ -143,12 +133,24 @@ func (s *StockService) Update(ctx *gin.Context) *utils.Response {
 
 func (s *StockService) Delete(ctx *gin.Context) *utils.Response{
 	var response utils.Response
-	err:=s.	Repo.Delete(ctx.Param("id"))
+	id:=ctx.Param("id")
+	_, err := s.Repo.GetOne(id)
 	if err != nil {
 		response = utils.Response{
-			Status: "500",
+				Status: "404",
+				Error: utils.ResponseError{
+					Code:    "NOT_FOUND",
+					Details: err.Error(),
+				},
+		}
+		return &response
+	}
+	err=s.Repo.Delete(id)
+	if err != nil {
+		response = utils.Response{
+			Status: "400",
 			Error: utils.ResponseError{
-				Code:    "DATABASE_ERROR",
+				Code:    "BAD_REQUEST",
 				Details: err.Error(),
 			},
 		}
