@@ -8,22 +8,21 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
 	"github.com/gin-gonic/gin"
 )
 
 type StockService struct {
-	Repo *repositories.StockRatingRepository
+	Repo *repositories.StockRepository
 }
 
-func NewStockService(repo *repositories.StockRatingRepository) *StockService {
+func NewStockService(repo *repositories.StockRepository) *StockService {
 	return &StockService{Repo: repo}
 }
 
-func (c *StockService) GetAll(ctx *gin.Context) utils.Response {
-	response := utils.Response{}
+func (s *StockService) GetAll(ctx *gin.Context) utils.Response {
+	var response utils.Response;
 	filters,sortBy,order,limit,offset:=GetFilters(ctx)
-	stocks, totalRecords, err := c.Repo.GetAll(filters,sortBy,order, limit, offset)
+	stocks, totalRecords, err := s.Repo.GetAll(filters,sortBy,order, limit, offset)
 
 	if err != nil {
 		response.Status = "500"
@@ -42,9 +41,9 @@ func (c *StockService) GetAll(ctx *gin.Context) utils.Response {
 
 }
 
-func (c *StockService) GetOne(ctx *gin.Context) utils.Response {
+func (s *StockService) GetOne(ctx *gin.Context) utils.Response {
 	response := utils.Response{}
-	stock, err := c.Repo.GetOne(ctx.Param("id"))
+	stock, err := s.Repo.GetOne(ctx.Param("id"))
 
 	if err != nil {
 		response.Status = "500"
@@ -57,19 +56,18 @@ func (c *StockService) GetOne(ctx *gin.Context) utils.Response {
 	return response
 }
 
-func (c *StockService) Create(ctx *gin.Context) *utils.Response {
+func (s *StockService) Create(ctx *gin.Context) *utils.Response {
 	var response utils.Response
 
-	stockRating, decodeResponse := DecodeJson(ctx)
+	stock, decodeResponse := DecodeJson(ctx)
 	if decodeResponse != nil {
 		return decodeResponse
 	}
-	stockTime, decodeResponse:=ParseTextToTime(stockRating.Time)
-	if decodeResponse != nil {
-		return decodeResponse
+	if stock.Time==nil {
+		stock.Time=new(time.Time)
 	}
 
-	err := c.Repo.Create(stockRating,stockTime)
+	err := s.Repo.Create(stock)
 	if err != nil {
 		response = utils.Response{
 			Status: "500",
@@ -88,30 +86,41 @@ func (c *StockService) Create(ctx *gin.Context) *utils.Response {
 	return &response
 }
 
-func (c *StockService) Update(ctx *gin.Context) *utils.Response {
+func (s *StockService) Update(ctx *gin.Context) *utils.Response {
 	var response *utils.Response
-	newStockRating := &models.StockRatingUpdateRequest{}
+	newStock := &models.StockRequestUpdate{}
+	id:=ctx.Param("id")
 
-	newStockRating.Body, response = DecodeJson(ctx)
+	newStock.Body, response = DecodeJson(ctx)
 	if response != nil {
 		return response
 	}
 
-	stockRating, err := c.Repo.GetOne(ctx.Param("id"))
+	stock, err := s.Repo.GetOne(id)
 	if err != nil {
 		response = &utils.Response{
-				Status: "500",
+				Status: "404",
 				Error: utils.ResponseError{
-					Code:    "DATABASE_ERROR",
+					Code:    "NOT_FOUND",
 					Details: err.Error(),
 				},
 		}
 		return response
 	}
+	if stock == nil {
+		response = &utils.Response{
+				Status: "400",
+				Error: utils.ResponseError{
+					Code:    "BAD_REQUEST",
+					Details: "Stock Not Found",
+				},
+		}
+		return response
+	}
 
-	UpdateValues(stockRating, newStockRating.Body)
+	UpdateValues(stock, newStock)
 
-	err = c.Repo.Update(stockRating)
+	err = s.Repo.Update(id,&stock.Stock)
 	if err != nil {
 		return &utils.Response{
 				Status: "500",
@@ -125,16 +134,16 @@ func (c *StockService) Update(ctx *gin.Context) *utils.Response {
 	return &utils.Response{
 
 			Status: "200",
-			Data:   stockRating,
+			Data:  "Actualizado Correctamente",
 
 	}
 
 }
 
 
-func (c *StockService) Delete(ctx *gin.Context) *utils.Response{
+func (s *StockService) Delete(ctx *gin.Context) *utils.Response{
 	var response utils.Response
-	err:=c.	Repo.Delete(ctx.Param("id"))
+	err:=s.	Repo.Delete(ctx.Param("id"))
 	if err != nil {
 		response = utils.Response{
 			Status: "500",
@@ -153,9 +162,9 @@ func (c *StockService) Delete(ctx *gin.Context) *utils.Response{
 	return &response
 }
 
-func DecodeJson(ctx *gin.Context) (*models.StockRatingCreate, *utils.Response) {
+func DecodeJson(ctx *gin.Context) (*models.Stock, *utils.Response) {
 	var response utils.Response
-	var stockRating models.StockRatingCreate
+	var stockRating models.Stock
 
 	if err := ctx.ShouldBind(&stockRating); err != nil {
 		response = utils.Response{
@@ -170,31 +179,9 @@ func DecodeJson(ctx *gin.Context) (*models.StockRatingCreate, *utils.Response) {
 	return &stockRating, nil
 }
 
-func ParseTextToTime(text string)(*time.Time,*utils.Response){
-	var response utils.Response
-	
-	value:=text
-
-	dateTime,err:=time.Parse(time.RFC3339, value)
-	if err != nil {
-		response = utils.Response{
-			Status: "400",
-			Error: utils.ResponseError{
-				Code:    "ERROR_WHEN_PARSING_TEXT",
-				Details: err.Error(),
-			},
-		}
-		return nil,&response
-	}
-	return &dateTime,nil
-
-}
-
-
-func UpdateValues(stockRating *models.StockRatingGet , newStockRating *models.StockRatingCreate) {
-	mockStockRating:=models.NewStockRatingCreate(newStockRating,stockRating.ID)
-	v1 := reflect.ValueOf(stockRating).Elem()
-	V2 := reflect.ValueOf(mockStockRating).Elem()
+func UpdateValues(stockRating *models.StockResponseGet , newStockRating *models.StockRequestUpdate) {
+	v1 := reflect.ValueOf(&stockRating.Stock).Elem()
+	V2 := reflect.ValueOf(newStockRating.Body).Elem()
 
 	for i :=0; i <v1.NumField(); i++{
 		field1:= v1.Field(i)
@@ -214,9 +201,9 @@ func GetFilters(ctx *gin.Context)(map[string]string, []string, []string, int, in
 		}
 	}
 
-	sortBy := strings.Split(ctx.DefaultQuery("sortBy", "time"), ",") 
-	order := strings.Split(ctx.DefaultQuery("order", "desc"), ",")   
-	limit, err := strconv.Atoi(ctx.DefaultQuery("limit", "10")) 
+	sortBy := strings.Split(ctx.DefaultQuery("sortBy", "time"), ",")
+	order := strings.Split(ctx.DefaultQuery("order", "desc"), ",") 
+	limit, err := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
 	if err != nil || limit <= 0 {
 		limit = 10
 	}

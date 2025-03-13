@@ -18,19 +18,25 @@
   "paths": {
     "/stock": {
       "get": {
-        "description": "GetStock returns all stock",
+        "description": "GetStocks returns all stock",
         "tags": [
           "stock"
         ],
-        "operationId": "GetStock",
+        "operationId": "getStocks",
         "responses": {
           "200": {
+            "$ref": "#/responses/Response"
+          },
+          "400": {
+            "$ref": "#/responses/Response"
+          },
+          "500": {
             "$ref": "#/responses/Response"
           }
         }
       },
       "post": {
-        "description": "CreateStock returns message",
+        "description": "CreateStock returns a success message",
         "tags": [
           "stock"
         ],
@@ -42,12 +48,18 @@
             "name": "body",
             "in": "body",
             "schema": {
-              "$ref": "#/definitions/createStock"
+              "$ref": "#/definitions/Stock"
             }
           }
         ],
         "responses": {
-          "200": {
+          "202": {
+            "$ref": "#/responses/Response"
+          },
+          "400": {
+            "$ref": "#/responses/Response"
+          },
+          "500": {
             "$ref": "#/responses/Response"
           }
         }
@@ -55,11 +67,11 @@
     },
     "/stock/{id}": {
       "get": {
-        "description": "Delete returns message",
+        "description": "GetOneStock returns one from the stock",
         "tags": [
           "stock"
         ],
-        "operationId": "id",
+        "operationId": "getStock",
         "parameters": [
           {
             "type": "string",
@@ -73,11 +85,17 @@
         "responses": {
           "200": {
             "$ref": "#/responses/Response"
+          },
+          "400": {
+            "$ref": "#/responses/Response"
+          },
+          "500": {
+            "$ref": "#/responses/Response"
           }
         }
       },
       "put": {
-        "description": "updateStock returns message",
+        "description": "updateStock returns a success message",
         "tags": [
           "stock"
         ],
@@ -97,12 +115,18 @@
             "name": "body",
             "in": "body",
             "schema": {
-              "$ref": "#/definitions/createStock"
+              "$ref": "#/definitions/Stock"
             }
           }
         ],
         "responses": {
           "200": {
+            "$ref": "#/responses/Response"
+          },
+          "400": {
+            "$ref": "#/responses/Response"
+          },
+          "500": {
             "$ref": "#/responses/Response"
           }
         }
@@ -112,7 +136,7 @@
         "tags": [
           "stock"
         ],
-        "operationId": "id",
+        "operationId": "deleteStock",
         "parameters": [
           {
             "type": "string",
@@ -126,28 +150,18 @@
         "responses": {
           "200": {
             "$ref": "#/responses/Response"
+          },
+          "400": {
+            "$ref": "#/responses/Response"
+          },
+          "500": {
+            "$ref": "#/responses/Response"
           }
         }
       }
     }
   },
   "definitions": {
-    "ResponseBody": {
-      "type": "object",
-      "properties": {
-        "data": {
-          "x-go-name": "Data"
-        },
-        "error": {
-          "$ref": "#/definitions/ResponseError"
-        },
-        "status": {
-          "type": "string",
-          "x-go-name": "Status"
-        }
-      },
-      "x-go-package": "example/hello/utils"
-    },
     "ResponseError": {
       "type": "object",
       "properties": {
@@ -162,7 +176,7 @@
       },
       "x-go-package": "example/hello/utils"
     },
-    "createStock": {
+    "Stock": {
       "type": "object",
       "required": [
         "ticker",
@@ -172,8 +186,7 @@
         "action",
         "brokerage",
         "rating_from",
-        "rating_to",
-        "time"
+        "rating_to"
       ],
       "properties": {
         "action": {
@@ -208,16 +221,16 @@
         },
         "target_from": {
           "description": "Target_from del stock",
-          "type": "integer",
-          "format": "int64",
+          "type": "number",
+          "format": "double",
           "default": 420,
           "minimum": 1,
           "x-go-name": "Target_from"
         },
         "target_to": {
           "description": "Target_to del stock",
-          "type": "integer",
-          "format": "int64",
+          "type": "number",
+          "format": "double",
           "default": 470,
           "minimum": 1,
           "x-go-name": "Target_to"
@@ -231,11 +244,11 @@
         "time": {
           "description": "Time del stock",
           "type": "string",
+          "format": "date-time",
           "default": "2025-01-13T00:30:05.813548892Z",
           "x-go-name": "Time"
         }
       },
-      "x-go-name": "StockRatingCreate",
       "x-go-package": "example/hello/models"
     }
   },
@@ -243,10 +256,15 @@
     "Response": {
       "description": "Response representa una respuesta del servidor.",
       "schema": {
-        "$ref": "#/definitions/ResponseBody"
+        "$ref": "#/definitions/ResponseError"
       },
       "headers": {
-        "body": {}
+        "data": {},
+        "error": {},
+        "meta": {},
+        "status": {
+          "type": "string"
+        }
       }
     }
   }

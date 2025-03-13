@@ -10,17 +10,17 @@ import (
 
 func SetupRoutes(router *gin.Engine) {
 	db:=connectiondb.ConnectDB()
-	stockRatingRepo:= repositories.NewStockRatingRepository(db)
-	stockRatingServ:= services.NewStockService(stockRatingRepo)
-	stockRatingController:= controllers.NewStockRatingController(stockRatingServ)
+	stockRepo:= repositories.NewStockRepository(db)
+	stockServ:= services.NewStockService(stockRepo)
+	stockController:= controllers.NewStockController(stockServ)
 
 	api := router.Group("api/v1")
 	{
-		api.GET("stock", stockRatingController.GetAll)
-		api.GET("stock/:id", stockRatingController.GetOne)
-		api.POST("stock", stockRatingController.Post)
-		api.PUT("stock/:id", stockRatingController.Put)
-		api.DELETE("stock/:id", stockRatingController.Delete)
+		api.GET("stock", stockController.GetAll)
+		api.GET("stock/:id", stockController.GetOne)
+		api.POST("stock", stockController.Create)
+		api.PUT("stock/:id", stockController.Update)
+		api.DELETE("stock/:id", stockController.Delete)
 	}
 }
 
