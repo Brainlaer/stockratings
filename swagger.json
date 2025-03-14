@@ -25,13 +25,22 @@
         "operationId": "getStocks",
         "responses": {
           "200": {
-            "$ref": "#/responses/Response"
+            "description": "ResponseSuccess",
+            "schema": {
+              "$ref": "#/definitions/ResponseSuccess"
+            }
           },
           "400": {
-            "$ref": "#/responses/Response"
+            "description": "ResponseError",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
           },
           "500": {
-            "$ref": "#/responses/Response"
+            "description": "ResponseError",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
           }
         }
       },
@@ -54,13 +63,22 @@
         ],
         "responses": {
           "202": {
-            "$ref": "#/responses/Response"
+            "description": "ResponseSuccess",
+            "schema": {
+              "$ref": "#/definitions/ResponseSuccess"
+            }
           },
           "400": {
-            "$ref": "#/responses/Response"
+            "description": "ResponseError",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
           },
           "500": {
-            "$ref": "#/responses/Response"
+            "description": "ResponseError",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
           }
         }
       }
@@ -84,13 +102,22 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/Response"
+            "description": "ResponseSuccess",
+            "schema": {
+              "$ref": "#/definitions/ResponseSuccess"
+            }
           },
           "400": {
-            "$ref": "#/responses/Response"
+            "description": "ResponseError",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
           },
           "500": {
-            "$ref": "#/responses/Response"
+            "description": "ResponseError",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
           }
         }
       },
@@ -121,13 +148,22 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/Response"
+            "description": "ResponseSuccess",
+            "schema": {
+              "$ref": "#/definitions/ResponseSuccess"
+            }
           },
           "400": {
-            "$ref": "#/responses/Response"
+            "description": "ResponseError",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
           },
           "500": {
-            "$ref": "#/responses/Response"
+            "description": "ResponseError",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
           }
         }
       },
@@ -149,13 +185,22 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/responses/Response"
+            "description": "ResponseSuccess",
+            "schema": {
+              "$ref": "#/definitions/ResponseSuccess"
+            }
           },
           "400": {
-            "$ref": "#/responses/Response"
+            "description": "ResponseError",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
           },
           "500": {
-            "$ref": "#/responses/Response"
+            "description": "ResponseError",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
           }
         }
       }
@@ -172,6 +217,18 @@
         "details": {
           "type": "string",
           "x-go-name": "Details"
+        }
+      },
+      "x-go-package": "example/hello/utils"
+    },
+    "ResponseSuccess": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "x-go-name": "Data"
+        },
+        "meta": {
+          "x-go-name": "Meta"
         }
       },
       "x-go-package": "example/hello/utils"
@@ -259,12 +316,11 @@
         "$ref": "#/definitions/ResponseError"
       },
       "headers": {
-        "data": {},
         "error": {},
-        "meta": {},
         "status": {
           "type": "string"
-        }
+        },
+        "success": {}
       }
     }
   }
