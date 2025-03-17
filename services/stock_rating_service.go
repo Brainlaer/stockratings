@@ -21,8 +21,8 @@ func NewStockService(repo *repositories.StockRepository) *StockService {
 
 func (s *StockService) GetAll(ctx *gin.Context) *utils.Response {
 	var response utils.Response
-	filters, sortBy, order, limit, offset := GetFilters(ctx)
-	stocks, totalRecords, err := s.Repo.GetAll(filters, sortBy, order, limit, offset)
+	filters, sortBy, order, limit, offset, strongQuery := GetFilters(ctx)
+	stocks, totalRecords, err := s.Repo.GetAll(filters, sortBy, order, limit, offset, strongQuery)
 
 	if err != nil {
 		response = utils.Response{
@@ -215,14 +215,28 @@ func UpdateValues(stockRating *models.StockResponseGet, newStockRating *models.S
 	}
 }
 
-func GetFilters(ctx *gin.Context) (map[string]string, []string, []string, int, int) {
-	filters := map[string]string{}
-	for _, key := range []string{"ticker", "company", "action", "brokerage", "rating_from", "rating_to"} {
+func GetFilters(ctx *gin.Context) (map[string]interface{}, []string, []string, int, int, bool) {
+	filters := map[string]interface{}{}
+	for _, key := range []string{"ticker", "company", "brokerage"} {
 		if value := ctx.Query(key); value != "" {
 			filters[key] = value
 		}
 	}
 
+	if ratingTo := ctx.Query("rating_to"); ratingTo != "" {
+		filters["rating_to"] = strings.Split(ratingTo, ",") 
+	}
+	if ratingFrom := ctx.Query("rating_from"); ratingFrom != "" {
+		filters["rating_from"] = strings.Split(ratingFrom, ",")
+	}
+	if action := ctx.Query("action"); action != "" {
+		filters["action"] = strings.Split(action, ",")
+	}
+	
+	strongQuery, err:= strconv.ParseBool(ctx.DefaultQuery("strongQuery", "or"))
+	if err != nil {
+		strongQuery=true
+	}
 	sortBy := strings.Split(ctx.DefaultQuery("sortBy", "time"), ",")
 	order := strings.Split(ctx.DefaultQuery("order", "desc"), ",")
 	limit, err := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
@@ -234,5 +248,5 @@ func GetFilters(ctx *gin.Context) (map[string]string, []string, []string, int, i
 	if err != nil || offset < 0 {
 		offset = 0
 	}
-	return filters, sortBy, order, limit, offset
+	return filters, sortBy, order, limit, offset, strongQuery
 }

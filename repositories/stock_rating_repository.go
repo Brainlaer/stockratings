@@ -15,7 +15,7 @@ func NewStockRepository(db *sql.DB) *StockRepository {
 	return &StockRepository{DB: db}
 }
 
-func (r *StockRepository) GetAll(filters map[string]string, sortBy []string, order []string, limit int, offset int) ([]models.StockResponseGet, int, error) {
+func (r *StockRepository) GetAll(filters map[string]interface{}, sortBy []string, order []string, limit int, offset int, queryStrong bool) ([]models.StockResponseGet, int, error) {
 	query := `SELECT *,
     ((target_to - target_from) / target_from) * 100 AS growth FROM stock_ratings`
 	args := []interface{}{}
@@ -25,14 +25,31 @@ func (r *StockRepository) GetAll(filters map[string]string, sortBy []string, ord
 
 	i := 1
 	for key, value := range filters {
-		whereClauses = append(whereClauses, fmt.Sprintf("%s ILIKE $%d", key, i))
-		args = append(args, "%"+value+"%")
-		i++
+		if key == "rating_to" || key == "rating_from" || key == "action" {
+			vals := value.([]string)
+			placeholders := []string{}
+			for _, v := range vals {
+				placeholders = append(placeholders, fmt.Sprintf("LOWER(%s) ILIKE $%d", key, i))
+				args = append(args, "%"+strings.ToLower(v)+"%")
+				i++
+			}
+			whereClauses = append(whereClauses, fmt.Sprintf("(%s)", strings.Join(placeholders, " OR ")))
+		} else {
+			strValue, _ := value.(string)
+			whereClauses = append(whereClauses, fmt.Sprintf("%s ILIKE $%d", key, i))
+			args = append(args, "%"+strValue+"%")
+			i++
+		}
 	}
 
 	if len(whereClauses) > 0 {
-		query += " WHERE " + strings.Join(whereClauses, " OR ")
-		countQuery += " WHERE " + strings.Join(whereClauses, " OR ")
+		if !queryStrong{
+			query += " WHERE " + strings.Join(whereClauses, " OR ")
+			countQuery += " WHERE " + strings.Join(whereClauses, " OR ")
+		}else{
+			query += " WHERE " + strings.Join(whereClauses, " AND ")
+			countQuery += " WHERE " + strings.Join(whereClauses, " AND ")
+		}
 	}
 
 	err := r.DB.QueryRow(countQuery, args...).Scan(&totalRecords)
@@ -65,7 +82,7 @@ func (r *StockRepository) GetAll(filters map[string]string, sortBy []string, ord
 
 	query += fmt.Sprintf(" LIMIT $%d OFFSET $%d", i, i+1)
 	args = append(args, limit, offset)
-
+	
 	rows, err := r.DB.Query(query, args...)
 
 	if err != nil {
